@@ -1,6 +1,6 @@
-# Use of he Hash-based Signa ure Algori hm wi h CBOR Objec Signing and Encryp ion (COSE)
+# Use of he Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)
 
-This is the working area for the IETF [COSE Working Group](https://datatracker.ietf.org/wg/cose/documents/) Internet-Draft, "Use of he Hash-based Signa ure Algori hm wi h CBOR Objec Signing and Encryp ion (COSE)".
+This is the working area for the IETF [COSE Working Group](https://datatracker.ietf.org/wg/cose/documents/) Internet-Draft, "Use of he Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)".
 
 * [Editor's Copy](https://cose-wg.github.io/cose-hash-sig/#go.draft-ietf-cose-hash-sig.html)
 * [Working Group Draft](https://tools.ietf.org/html/draft-ietf-cose-hash-sig)
