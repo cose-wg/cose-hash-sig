@@ -1,0 +1,691 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head profile="http://www.w3.org/2006/03/hcard http://dublincore.org/documents/2008/08/04/dc-html/">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+
+  <title>Use of the Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)</title>
+
+  
+<style type="text/css">/*<![CDATA[*/
+
+body {
+  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  color: #333;
+  font-size-adjust: 0.5;
+  line-height: 24px;
+  margin: 75px auto;
+  max-width: 624px;
+  padding: 0 5px;
+}
+
+.title, .filename, h1, h2, h3, h4, h5 {
+  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  font-size-adjust: 0.5;
+  font-weight: bold;
+  color: #333;
+  line-height: 100%;
+  margin: 1.2em 0 0.3em;
+}
+.title, #rfc\.title h1 { font-size: 32px; }
+h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
+h3, section h4, h4, section h5 { font-size: 16px; }
+h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
+  color: #333;
+}
+
+table {
+  margin-left: 0em;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+  vertical-align: top;
+}
+tr:nth-child(2n+1) > td,
+tr:nth-child(2n+1) > th {
+  background-color: #f9f9f9;
+}
+td.reference {
+  max-width: 200px;
+  border-top: none;
+  padding-right: 1em;
+}
+.right {
+  text-align: right;
+}
+
+
+table.header, table#rfc\.headerblock {
+  width: 100%;
+}
+table.header td, table#rfc\.headerblock td {
+  border: none;
+  background-color: transparent;
+  color: black;
+  padding: 0;
+}
+.filename {
+  display: block;
+  color: rgb(119, 119, 119);
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 100%;
+  margin: 10px 0 32px;
+}
+#rfc\.abstract+p, #rfc\.abstract p {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+samp, tt, code, pre, span.tt {
+  font: 13.5px Consolas, monospace;
+  font-size-adjust: none;
+}
+pre {
+  background-color: #eee;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+  padding: 5px;
+  margin: 5px;
+}
+.figure, caption {
+  font-style: italic;
+  margin: 0 1.5em;
+  text-align: left;
+}
+
+address {
+  margin: 16px 2px;
+  line-height: 20px;
+}
+.vcard {
+  font-style: normal;
+}
+.vcardline {
+  display: block;
+}
+.vcardline .fn, address b {
+  font-weight: normal;
+}
+.vcardline .hidden {
+  display: none;
+}
+
+dl {
+  margin-left: 1em;
+}
+dl.dl-horizontal: {
+  margin-left: 0;
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.nohang > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .5em;
+}
+dl.compact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+ul.empty {
+  list-style-type: none;
+}
+ul.empty li {
+  margin-top: .5em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+hr.noprint {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #2a6496;
+}
+a[href]:hover {
+  background-color: #eee;
+}
+
+p, ol, ul, li {
+  padding: 0;
+}
+p {
+  margin: 0.5em 0;
+}
+ol, ul {
+  margin: 0.2em 0 0.2em 2em;
+}
+li {
+  margin: 0.2em 0;
+}
+address {
+  font-style: normal;
+}
+
+ul.toc ul {
+  margin: 0 0 0 2em;
+}
+ul.toc li {
+  list-style: none;
+  margin: 0;
+}
+
+@media screen and (min-width: 924px) {
+  body {
+    padding-right: 350px;
+  }
+  body>ul.toc, body>#rfc\.toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 500px);
+    width: 300px;
+    z-index: 1;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  body>#rfc\.toc {
+    top: 55px;
+  }
+  body>ul.toc {
+    top: 100px;
+  }
+
+  ul.toc {
+    margin: 0 0 0 4px;
+    font-size: 12px;
+    line-height: 20px;
+  }
+  ul.toc ul {
+    margin-left: 1.2em;
+  }
+}
+
+.github-fork-ribbon-wrapper {
+  display: none;
+}
+@media screen and (min-width: 800px) {
+  /* "Fork me on GitHub" CSS ribbon based on
+   * https://github.com/simonwhitaker/github-fork-ribbon-css
+   */
+  .github-fork-ribbon {
+    position: absolute;
+    padding: 2px 0;
+    background-color: #a00;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
+    font: 700 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    pointer-events: auto;
+
+    top: 38px;
+    right: -45px;
+
+    transform: rotate(45deg);
+  }
+
+  .github-fork-ribbon a[href],
+  .github-fork-ribbon a[href]:hover {
+    color: #fff;
+    background-color: transparent;
+    text-decoration: none;
+    text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
+    text-align: center;
+
+    width: 190px;
+    line-height: 18px;
+
+    display: inline-block;
+    padding: 2px 0;
+
+    border: 1.5px dotted #fff;
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  .github-fork-ribbon-wrapper {
+    display: block;
+    width: 130px;
+    height: 130px;
+    position: absolute;
+    overflow: hidden;
+    top: 0; right: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .github-fork-ribbon-wrapper {
+    position: fixed;
+  }
+/*]]>*/</style>
+<meta name="viewport" content="initial-scale=1.0">
+
+
+  <link href="#rfc.toc" rel="Contents">
+<link href="#rfc.section.1" rel="Chapter" title="1 Introduction">
+<link href="#rfc.section.2" rel="Chapter" title="2 Terminology">
+<link href="#rfc.section.3" rel="Chapter" title="3 LMS Digital Signature Algorithm Overview">
+<link href="#rfc.section.3.1" rel="Chapter" title="3.1 Hierarchical Signature System (HSS)">
+<link href="#rfc.section.3.2" rel="Chapter" title="3.2 Leighton-Micali Signature (LMS)">
+<link href="#rfc.section.3.3" rel="Chapter" title="3.3 Leighton-Micali One-time Signature Algorithm (LM-OTS)">
+<link href="#rfc.section.4" rel="Chapter" title="4 Hash-based Signature Algorithm Identifiers">
+<link href="#rfc.section.5" rel="Chapter" title="5 Security Considerations">
+<link href="#rfc.section.5.1" rel="Chapter" title="5.1 Implementation Security Considerations">
+<link href="#rfc.section.5.2" rel="Chapter" title="5.2 Algorithm Security Considerations">
+<link href="#rfc.section.6" rel="Chapter" title="6 Operational Considerations">
+<link href="#rfc.section.7" rel="Chapter" title="7 IANA Considerations">
+<link href="#rfc.section.7.1" rel="Chapter" title="7.1 COSE Algorithms Registry Entry">
+<link href="#rfc.section.7.2" rel="Chapter" title="7.2 COSE Key Types Registry Entry">
+<link href="#rfc.section.8" rel="Chapter" title="8 Acknowledgements">
+<link href="#rfc.references" rel="Chapter" title="9 References">
+<link href="#rfc.references.1" rel="Chapter" title="9.1 Normative References">
+<link href="#rfc.references.2" rel="Chapter" title="9.2 Informative References">
+<link href="#rfc.authors" rel="Chapter">
+
+
+  <meta name="generator" content="xml2rfc version 2.15.3 - https://tools.ietf.org/tools/xml2rfc" />
+  <link rel="schema.dct" href="http://purl.org/dc/terms/" />
+
+  <meta name="dct.creator" content="Housley, R." />
+  <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-cose-hash-sig-00" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-01-15" />
+  <meta name="dct.abstract" content="This document specifies the conventions for using the Leighton-Micali Signature (LMS) algorithm for digital signatures with the CBOR Object Signing and Encryption (COSE) syntax." />
+  <meta name="description" content="This document specifies the conventions for using the Leighton-Micali Signature (LMS) algorithm for digital signatures with the CBOR Object Signing and Encryption (COSE) syntax." />
+
+</head>
+
+<body>
+
+  <table class="header">
+    <tbody>
+    
+    	<tr>
+<td class="left">Network Working Group</td>
+<td class="right">R. Housley</td>
+</tr>
+<tr>
+<td class="left">Internet-Draft</td>
+<td class="right">Vigil Security</td>
+</tr>
+<tr>
+<td class="left">Intended status: Standards Track</td>
+<td class="right">January 15, 2019</td>
+</tr>
+<tr>
+<td class="left">Expires: July 19, 2019</td>
+<td class="right"></td>
+</tr>
+
+    	
+    </tbody>
+  </table>
+
+  <p class="title">Use of the Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)<br />
+  <span class="filename">draft-ietf-cose-hash-sig-00</span></p>
+  
+  <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
+<p>This document specifies the conventions for using the Leighton-Micali Signature (LMS) algorithm for digital signatures with the CBOR Object Signing and Encryption (COSE) syntax.</p>
+<h1 id="rfc.status"><a href="#rfc.status">Status of This Memo</a></h1>
+<p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
+<p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
+<p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
+<p>This Internet-Draft will expire on July 19, 2019.</p>
+<h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
+<p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
+<p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
+
+  
+  <hr class="noprint" />
+  <h1 class="np" id="rfc.toc"><a href="#rfc.toc">Table of Contents</a></h1>
+  <ul class="toc">
+
+  	<li>1.   <a href="#rfc.section.1">Introduction</a>
+</li>
+<li>2.   <a href="#rfc.section.2">Terminology</a>
+</li>
+<li>3.   <a href="#rfc.section.3">LMS Digital Signature Algorithm Overview</a>
+</li>
+<ul><li>3.1.   <a href="#rfc.section.3.1">Hierarchical Signature System (HSS)</a>
+</li>
+<li>3.2.   <a href="#rfc.section.3.2">Leighton-Micali Signature (LMS)</a>
+</li>
+<li>3.3.   <a href="#rfc.section.3.3">Leighton-Micali One-time Signature Algorithm (LM-OTS)</a>
+</li>
+</ul><li>4.   <a href="#rfc.section.4">Hash-based Signature Algorithm Identifiers</a>
+</li>
+<li>5.   <a href="#rfc.section.5">Security Considerations</a>
+</li>
+<ul><li>5.1.   <a href="#rfc.section.5.1">Implementation Security Considerations</a>
+</li>
+<li>5.2.   <a href="#rfc.section.5.2">Algorithm Security Considerations</a>
+</li>
+</ul><li>6.   <a href="#rfc.section.6">Operational Considerations</a>
+</li>
+<li>7.   <a href="#rfc.section.7">IANA Considerations</a>
+</li>
+<ul><li>7.1.   <a href="#rfc.section.7.1">COSE Algorithms Registry Entry</a>
+</li>
+<li>7.2.   <a href="#rfc.section.7.2">COSE Key Types Registry Entry</a>
+</li>
+</ul><li>8.   <a href="#rfc.section.8">Acknowledgements</a>
+</li>
+<li>9.   <a href="#rfc.references">References</a>
+</li>
+<ul><li>9.1.   <a href="#rfc.references.1">Normative References</a>
+</li>
+<li>9.2.   <a href="#rfc.references.2">Informative References</a>
+</li>
+</ul><li><a href="#rfc.authors">Author's Address</a>
+</li>
+
+
+  </ul>
+
+  <h1 id="rfc.section.1">
+<a href="#rfc.section.1">1.</a> <a href="#intro" id="intro">Introduction</a>
+</h1>
+<p id="rfc.section.1.p.1">Today, RSA is often used to digitally sign software updates.  In preparation for a day when RSA, DSA, and ECDSA cannot be depended upon, a digital signature algorithm is needed that will remain secure even if there are significant cryptoanalytic advances or a large- scale quantum computer is invented.  The hash-based digital signature algorithm specified in <a href="#HASHSIG" class="xref">[HASHSIG]</a> is one such algorithm.  The use of hash-based signatures to protect software update distribution will allow the deployment of software that implements new cryptosystems even if such advances break current digital signature mechanisms.</p>
+<p id="rfc.section.1.p.2">This document specifies the conventions for using the Leighton-Micali Signature (LMS) algorithm <a href="#HASHSIG" class="xref">[HASHSIG]</a> for digital signatures with the CBOR Object Signing and Encryption (COSE) <a href="#RFC8152" class="xref">[RFC8152]</a> syntax.  The LMS algorithm is one form of hash-based digital signature; it can only be used for a fixed number of signatures.  The LMS algorithm uses small private and public keys, and it has low computational cost; however, the signatures are quite large.</p>
+<h1 id="rfc.section.2">
+<a href="#rfc.section.2">2.</a> <a href="#terms" id="terms">Terminology</a>
+</h1>
+<p id="rfc.section.2.p.1">The key words &#8220;MUST&#8221;, &#8220;MUST NOT&#8221;, &#8220;REQUIRED&#8221;, &#8220;SHALL&#8221;, &#8220;SHALL NOT&#8221;, &#8220;SHOULD&#8221;, &#8220;SHOULD NOT&#8221;, &#8220;RECOMMENDED&#8221;, &#8220;NOT RECOMMENDED&#8221;, &#8220;MAY&#8221;, and &#8220;OPTIONAL&#8221; in this  document are to be interpreted as described in BCP&#160;14 <a href="#RFC2119" class="xref">[RFC2119]</a> <a href="#RFC8174" class="xref">[RFC8174]</a> when, and only when, they appear in all capitals, as shown here.</p>
+<h1 id="rfc.section.3">
+<a href="#rfc.section.3">3.</a> <a href="#overview" id="overview">LMS Digital Signature Algorithm Overview</a>
+</h1>
+<p id="rfc.section.3.p.1">This specification makes use of the hash-based signature algorithm specified in <a href="#HASHSIG" class="xref">[HASHSIG]</a>, which is the Leighton and Micali adaptation <a href="#LM" class="xref">[LM]</a> of the original Lamport-Diffie-Winternitz-Merkle one-time signature system <a href="#M1979" class="xref">[M1979]</a><a href="#M1987" class="xref">[M1987]</a><a href="#M1989a" class="xref">[M1989a]</a><a href="#M1989b" class="xref">[M1989b]</a>.</p>
+<p id="rfc.section.3.p.2">The hash-based signature algorithm has three major components:</p>
+<pre>
+   o  Hierarchical Signature System (HSS) -- see Section 3.1;
+
+   o  Leighton-Micali Signature (LMS) -- see Section 3.2; and
+
+   o  Leighton-Micali One-time Signature Algorithm (LM-OTS) -- see
+         Section 3.3.
+</pre>
+<p id="rfc.section.3.p.3">As implied by the name, the hash-based signature algorithm depends on a collision-resistant hash function.  The the hash-based signature algorithm specified in <a href="#HASHSIG" class="xref">[HASHSIG]</a> currently makes use of the SHA-256 one-way hash function <a href="#SHS" class="xref">[SHS]</a>, but it also establishes an IANA registry to permit the registration of additional one-way hash functions in the future.</p>
+<h1 id="rfc.section.3.1">
+<a href="#rfc.section.3.1">3.1.</a> <a href="#hss" id="hss">Hierarchical Signature System (HSS)</a>
+</h1>
+<p id="rfc.section.3.1.p.1">The hash-based signature algorithm specified in <a href="#HASHSIG" class="xref">[HASHSIG]</a> uses a hierarchy of trees.  The Hierarchical Signature System (HSS) allows subordinate trees to be generated when needed by the signer.  By using trees-of-trees, a very large number of nodes can be accommodated, where each node enables a single digital signature.  Without the HSS, the generation of such a large tree might take weeks or longer.</p>
+<p id="rfc.section.3.1.p.2">An HSS signature as specified in <a href="#HASHSIG" class="xref">[HASHSIG]</a> carries the number of signed public keys (Nspk), followed by that number of signed public keys, followed by the LMS signature as described in <a href="#lms" class="xref">Section 3.2</a>.  Each signed public key is represented by the hash value at the root of the tree, and it also contains information about the tree structure.  The signature over the public key is an LMS signature as described in <a href="#lms" class="xref">Section 3.2</a>.</p>
+<p id="rfc.section.3.1.p.3">The elements of the HSS signature value for a stand-alone tree can be summarized as:</p>
+<pre>
+   u32str(0) ||
+   lms_signature  /* signature of message */
+</pre>
+<p id="rfc.section.3.1.p.4">The elements of the HSS signature value for a tree with Nspk levels can be summarized as:</p>
+<pre>
+   u32str(Nspk) ||
+   signed_public_key[0] ||
+   signed_public_key[1] ||
+      ...
+   signed_public_key[Nspk-2] ||
+   signed_public_key[Nspk-1] ||
+   lms_signature  /* signature of message */
+</pre>
+<p id="rfc.section.3.1.p.5">where, as defined in Section 3.3 of <a href="#HASHSIG" class="xref">[HASHSIG]</a>, a signed_public_key is the lms_signature over the public key followed by the public key itself.  Note that Nspk is the number of levels in the hierarchy of trees minus 1.</p>
+<h1 id="rfc.section.3.2">
+<a href="#rfc.section.3.2">3.2.</a> <a href="#lms" id="lms">Leighton-Micali Signature (LMS)</a>
+</h1>
+<p id="rfc.section.3.2.p.1">Each tree in the hash-based signature algorithm specified in <a href="#HASHSIG" class="xref">[HASHSIG]</a> uses the Leighton-Micali Signature (LMS) system.  LMS systems have two parameters.  The first parameter is the height of the tree, h, which is the number of levels in the tree minus one.  The hash-based signature algorithm supports five values for this parameter: h=5; h=10; h=15; h=20; and h=25.  Note that there are 2^h leaves in the tree.  The second parameter is the number of bytes output by the hash function, m, which is the amount of data associated with each node in the tree.  This specification supports only SHA-256, with m=32.</p>
+<p id="rfc.section.3.2.p.2">Currently, the hash-based signature algorithm supports five tree sizes:</p>
+<pre>
+   LMS_SHA256_M32_H5;
+   LMS_SHA256_M32_H10;
+   LMS_SHA256_M32_H15;
+   LMS_SHA256_M32_H20; and
+   LMS_SHA256_M32_H25.
+</pre>
+<p id="rfc.section.3.2.p.3">The <a href="#HASHSIG" class="xref">[HASHSIG]</a> specification  establishes an IANA registry to permit the registration of additional tree sizes in the future.</p>
+<p id="rfc.section.3.2.p.4">An LMS signature consists of four elements: the number of the leaf associated with the LM-OTS signature, an LM-OTS signature as described in <a href="#lmots" class="xref">Section 3.3</a>, a typecode indicating the particular LMS algorithm, and an array of values that is associated with the path through the tree from the leaf associated with the LM-OTS signature to the root.  The array of values contains the siblings of the nodes on the path from the leaf to the root but does not contain the nodes on the path itself.  The array for a tree with height h will have h values.  The first value is the sibling of the leaf, the next value is the sibling of the parent of the leaf, and so on up the path to the root.</p>
+<p id="rfc.section.3.2.p.5">The four elements of the LMS signature value can be summarized as:</p>
+<pre>
+   u32str(q) ||
+   ots_signature ||
+   u32str(type) ||
+   path[0] || path[1] || ... || path[h-1]
+</pre>
+<h1 id="rfc.section.3.3">
+<a href="#rfc.section.3.3">3.3.</a> <a href="#lmots" id="lmots">Leighton-Micali One-time Signature Algorithm (LM-OTS)</a>
+</h1>
+<p id="rfc.section.3.3.p.1">The hash-based signature algorithm depends on a one-time signature method.  This specification makes use of the Leighton-Micali One-time Signature Algorithm (LM-OTS) <a href="#HASHSIG" class="xref">[HASHSIG]</a>.  An LM-OTS has five parameters:</p>
+<pre>
+   n -  The number of bytes output by the hash function.  This
+        specification supports only SHA-256 [SHS], with n=32.
+
+   H -  A preimage-resistant hash function that accepts byte strings
+        of any length, and returns an n-byte string.  This
+        specification supports only SHA-256 [SHS].
+
+   w -  The width in bits of the Winternitz coefficients.  [HASHSIG]
+        supports four values for this parameter: w=1; w=2; w=4; and
+        w=8.
+
+   p -  The number of n-byte string elements that make up the LM-OTS
+        signature.
+
+   ls - The number of left-shift bits used in the checksum function,
+        which is defined in Section 4.5 of [HASHSIG].
+</pre>
+<p id="rfc.section.3.3.p.2">The values of p and ls are dependent on the choices of the parameters n and w, as described in Appendix A of <a href="#HASHSIG" class="xref">[HASHSIG]</a>.</p>
+<p id="rfc.section.3.3.p.3">Currently, the hash-based signature algorithm supports four LM-OTS variants:</p>
+<pre>
+   LMOTS_SHA256_N32_W1;
+   LMOTS_SHA256_N32_W2;
+   LMOTS_SHA256_N32_W4; and
+   LMOTS_SHA256_N32_W8.
+</pre>
+<p id="rfc.section.3.3.p.4">The <a href="#HASHSIG" class="xref">[HASHSIG]</a> specification  establishes an IANA registry to permit the registration of additional variants in the future.</p>
+<p id="rfc.section.3.3.p.5">Signing involves the generation of C, which is an n-byte random value.</p>
+<p id="rfc.section.3.3.p.6">The LM-OTS signature value can be summarized as:</p>
+<pre>
+   u32str(otstype) || C || y[0] || ... || y[p-1]
+</pre>
+<h1 id="rfc.section.4">
+<a href="#rfc.section.4">4.</a> <a href="#algids" id="algids">Hash-based Signature Algorithm Identifiers</a>
+</h1>
+<p id="rfc.section.4.p.1">The CBOR Object Signing and Encryption (COSE) <a href="#RFC8152" class="xref">[RFC8152]</a> supports two signature algorithm schemes.  This specification makes use of the signature with appendix scheme for hash-based signatures.</p>
+<p id="rfc.section.4.p.2">The signature value is a large byte string.  The byte string is designed for easy parsing, and it includes a counter and type codes that indirectly provide all of the information that is needed to parse the byte string during signature validation.</p>
+<p id="rfc.section.4.p.3">When using a COSE key for this algorithm, the following checks are made:</p>
+<pre>
+   o  The 'kty' field MUST be present, and it MUST be 'HSS-LMS'.
+
+   o  If the 'alg' field is present, and it MUST be 'HSS-LMS'.
+
+   o  If the 'key_ops' field is present, it MUST include 'sign' when
+        creating a hash-based signature.
+
+   o  If the 'key_ops' field is present, it MUST include 'verify'
+        when verifying a hash-based signature.
+
+   o  If the 'kid' field is present, it MAY be used to identify the
+        top of the HSS tree.  In [HASHSIG], this identifier is called
+        'I', and it is the 16-byte identifier of the LMS public key
+        for the tree.
+</pre>
+<h1 id="rfc.section.5">
+<a href="#rfc.section.5">5.</a> <a href="#seccons" id="seccons">Security Considerations</a>
+</h1>
+<h1 id="rfc.section.5.1">
+<a href="#rfc.section.5.1">5.1.</a> <a href="#implementation-security-considerations" id="implementation-security-considerations">Implementation Security Considerations</a>
+</h1>
+<p id="rfc.section.5.1.p.1">Implementations must protect the private keys.  Use of a hardware security module (HSM) is one way to protect the private keys.  Compromise of the private keys may result in the ability to forge signatures.  Along with the private key, the implementation must keep track of which leaf nodes in the tree have been used.  Loss of integrity of this tracking data can cause a one-time key to be used more than once.  As a result, when a private key and the tracking data are stored on non-volatile media or stored in a virtual machine environment, care must be taken to preserve confidentiality and integrity.</p>
+<p id="rfc.section.5.1.p.2">When a LMS key pair is generating a LMS key pair, an implementation must must generate the key pair and the corresponding identifier independently of all other key pairs in the HSS tree.</p>
+<p id="rfc.section.5.1.p.3">An implementation must ensure that a LM-OTS private key is used to generate a signature only one time, and ensure that it cannot be used for any other purpose.</p>
+<p id="rfc.section.5.1.p.4">The generation of private keys relies on random numbers.  The use of inadequate pseudo-random number generators (PRNGs) to generate these values can result in little or no security.  An attacker may find it much easier to reproduce the PRNG environment that produced the keys, searching the resulting small set of possibilities, rather than brute force searching the whole key space.  The generation of quality random numbers is difficult.  <a href="#RFC4086" class="xref">[RFC4086]</a> offers important guidance in this area.</p>
+<p id="rfc.section.5.1.p.5">The generation of hash-based signatures also depends on random numbers.  While the consequences of an inadequate pseudo-random number generator (PRNGs) to generate these values is much less severe than the generation of private keys, the guidance in <a href="#RFC4086" class="xref">[RFC4086]</a> remains important.</p>
+<h1 id="rfc.section.5.2">
+<a href="#rfc.section.5.2">5.2.</a> <a href="#algorithm-security-considerations" id="algorithm-security-considerations">Algorithm Security Considerations</a>
+</h1>
+<p id="rfc.section.5.2.p.1">At Black Hat USA 2013, some researchers gave a presentation on the current sate of public key cryptography.  They said: &#8220;Current cryptosystems depend on discrete logarithm and factoring which has seen some major new developments in the past 6 months&#8221; <a href="#BH2013" class="xref">[BH2013]</a>.  They encouraged preparation for a day when RSA and DSA cannot be depended upon.</p>
+<p id="rfc.section.5.2.p.2">A post-quantum cryptosystem is a system that is secure against quantum computers that have more than a trivial number of quantum bits.  It is open to conjecture when it will be feasible to build such a machine.  RSA, DSA, and ECDSA are not post-quantum secure.</p>
+<p id="rfc.section.5.2.p.3">The LM-OTP one-time signature, LMS, and HSS do not depend on discrete logarithm or factoring, as a result these algorithms are considered to be post-quantum secure.</p>
+<p id="rfc.section.5.2.p.4">Today, RSA is often used to digitally sign software updates.  This means that the distribution of software updates could be compromised if a significant advance is made in factoring or a quantum computer is invented.  The use of hash-based signatures to protect software update distribution will allow the deployment of software that implements new cryptosystems.</p>
+<h1 id="rfc.section.6">
+<a href="#rfc.section.6">6.</a> <a href="#opcons" id="opcons">Operational Considerations</a>
+</h1>
+<p id="rfc.section.6.p.1">The public key for the hash-based signature is the key at the root of Hierarchical Signature System (HSS).  In the absence of a public key infrastructure <a href="#RFC5280" class="xref">[RFC5280]</a>, this public key is a trust anchor, and the number of signatures that can be generated is bounded by the size of the overall HSS set of trees.  When all of the LM-OTS signatures have been used to produce a signature, then the establishment of a new trust anchor is required.</p>
+<p id="rfc.section.6.p.2">To ensure that none of tree nodes are used to generate more than one signature, the signer maintains state across different invocations of the signing algorithm.  Section 12.2 of <a href="#HASHSIG" class="xref">[HASHSIG]</a> offers some practical implementation approaches around this statefulness.  In some of these approaches, nodes are sacrificed to ensure that none are used more than once.  As a result, the total number of signatures that can be generated might be less than the overall HSS set of trees.</p>
+<h1 id="rfc.section.7">
+<a href="#rfc.section.7">7.</a> <a href="#iana" id="iana">IANA Considerations</a>
+</h1>
+<p id="rfc.section.7.p.1">IANA is requested to add entries for hash-based signatures in the &#8220;COSE Algorithms&#8221; registry and hash-based public keys in the &#8220;COSE Key Types&#8221; registry.</p>
+<h1 id="rfc.section.7.1">
+<a href="#rfc.section.7.1">7.1.</a> <a href="#cose-algorithms-registry-entry" id="cose-algorithms-registry-entry">COSE Algorithms Registry Entry</a>
+</h1>
+<p id="rfc.section.7.1.p.1">The new entry in the &#8220;COSE Algorithms&#8221; registry has the following columns:</p>
+<pre>
+   Name:  HASHSIG-HSS-LMS
+   
+   Value:  TBD (Value to be assigned by IANA)
+
+   Description:  Hash-based digital signatures using HSS/LMS
+
+   Reference:  This document (Number to be assigned by RFC Editor)
+
+   Recommended:  Yes
+</pre>
+<h1 id="rfc.section.7.2">
+<a href="#rfc.section.7.2">7.2.</a> <a href="#cose-key-types-registry-entry" id="cose-key-types-registry-entry">COSE Key Types Registry Entry</a>
+</h1>
+<p id="rfc.section.7.2.p.1">The new entry in the &#8220;COSE Key Types&#8221; registry has the following columns:</p>
+<pre>
+   Name:  HASHSIG-HSS-LMS
+
+   Value:  TBD (Value to be assigned by IANA)
+
+   Description:  Public key for hash-based digital signature using HSS/LMS
+
+   Reference:  This document (Number to be assigned by RFC Editor)
+</pre>
+<h1 id="rfc.section.8">
+<a href="#rfc.section.8">8.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a>
+</h1>
+<p id="rfc.section.8.p.1">Many hanks to Jim Schaad and Tony Putman for their valuable review and insights.</p>
+<h1 id="rfc.references">
+<a href="#rfc.references">9.</a> References</h1>
+<h1 id="rfc.references.1">
+<a href="#rfc.references.1">9.1.</a> Normative References</h1>
+<table><tbody>
+<tr>
+<td class="reference"><b id="HASHSIG">[HASHSIG]</b></td>
+<td class="top">
+<a title="Cisco Systems">McGrew, D.</a>, <a title="Cisco Systems">Curcio, M.</a> and <a title="Cisco Systems">S. Fluhrer</a>, "<a>Hash-Based Signatures</a>", draft-mcgrew-hash-sigs-15 (work in progress), January 2019.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC2119">[RFC2119]</b></td>
+<td class="top">
+<a>Bradner, S.</a>, "<a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>", BCP 14, RFC 2119, DOI 10.17487/RFC2119, March 1997.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC8152">[RFC8152]</b></td>
+<td class="top">
+<a>Schaad, J.</a>, "<a href="https://tools.ietf.org/html/rfc8152">CBOR Object Signing and Encryption (COSE)</a>", RFC 8152, DOI 10.17487/RFC8152, July 2017.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC8174">[RFC8174]</b></td>
+<td class="top">
+<a>Leiba, B.</a>, "<a href="https://tools.ietf.org/html/rfc8174">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>", BCP 14, RFC 8174, DOI 10.17487/RFC8174, May 2017.</td>
+</tr>
+<tr>
+<td class="reference"><b id="SHS">[SHS]</b></td>
+<td class="top">
+<a>National Institute of Standards and Technology (NIST)</a>, "<a>Secure Hash Standard</a>", FIPS Publication 180-3, 2008.</td>
+</tr>
+</tbody></table>
+<h1 id="rfc.references.2">
+<a href="#rfc.references.2">9.2.</a> Informative References</h1>
+<table><tbody>
+<tr>
+<td class="reference"><b id="BH2013">[BH2013]</b></td>
+<td class="top">
+<a title="Matasano">Ptacek, T.</a>, <a title="iSEC Partners">Ritter, T.</a>, <a title="iSEC Partners">Samuel, J.</a> and <a title="Artemis Internet">A. Stamos</a>, "<a href="https://media.blackhat.com/us-13/us-13-Stamos-The-Factoring-Dead.pdf">The Factoring Dead: Preparing for the Cryptopocalypse</a>", August 2013.</td>
+</tr>
+<tr>
+<td class="reference"><b id="LM">[LM]</b></td>
+<td class="top">
+<a>Leighton, F.</a> and <a>S. Micali</a>, "<a>Large provably fast and secure digital signature schemes from secure hash functions</a>", U.S. Patent 5,432,852, July 1995.</td>
+</tr>
+<tr>
+<td class="reference"><b id="M1979">[M1979]</b></td>
+<td class="top">
+<a>Merkle, R.</a>, "<a>Secrecy, Authentication, and Public Key Systems</a>", Stanford University Information Systems Laboratory Technical Report 1979-1, 1979.</td>
+</tr>
+<tr>
+<td class="reference"><b id="M1987">[M1987]</b></td>
+<td class="top">
+<a>Merkle, R.</a>, "<a>A Digital Signature Based on a Conventional Encryption Function</a>", Lecture Notes in Computer Science crypto87, 1988.</td>
+</tr>
+<tr>
+<td class="reference"><b id="M1989a">[M1989a]</b></td>
+<td class="top">
+<a>Merkle, R.</a>, "<a>A Certified Digital Signature</a>", Lecture Notes in Computer Science crypto89, 1990.</td>
+</tr>
+<tr>
+<td class="reference"><b id="M1989b">[M1989b]</b></td>
+<td class="top">
+<a>Merkle, R.</a>, "<a>One Way Hash Functions and DES</a>", Lecture Notes in Computer Science crypto89, 1990.</td>
+</tr>
+<tr>
+<td class="reference"><b id="PQC">[PQC]</b></td>
+<td class="top">
+<a title="Department of Computer Science, University of Illinois at Chicago">Bernstein, D.</a>, "<a href="http://www.pqcrypto.org/www.springer.com/cda/content/document/cda_downloaddocument/9783540887010-c1.pdf">Introduction to post-quantum cryptography</a>", 2009.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC4086">[RFC4086]</b></td>
+<td class="top">
+<a>Eastlake 3rd, D.</a>, <a>Schiller, J.</a> and <a>S. Crocker</a>, "<a href="https://tools.ietf.org/html/rfc4086">Randomness Requirements for Security</a>", BCP 106, RFC 4086, DOI 10.17487/RFC4086, June 2005.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC5280">[RFC5280]</b></td>
+<td class="top">
+<a>Cooper, D.</a>, <a>Santesson, S.</a>, <a>Farrell, S.</a>, <a>Boeyen, S.</a>, <a>Housley, R.</a> and <a>W. Polk</a>, "<a href="https://tools.ietf.org/html/rfc5280">Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile</a>", RFC 5280, DOI 10.17487/RFC5280, May 2008.</td>
+</tr>
+</tbody></table>
+<h1 id="rfc.authors"><a href="#rfc.authors">Author's Address</a></h1>
+<div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Russ Housley</span> 
+	  <span class="n hidden">
+		<span class="family-name">Housley</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Vigil Security, LLC</span>
+	<span class="adr">
+	  <span class="vcardline">516 Dranesville Road</span>
+
+	  <span class="vcardline">
+		<span class="locality">Herndon, VA</span>,  
+		<span class="region"></span>
+		<span class="code">20170</span>
+	  </span>
+	  <span class="country-name vcardline">US</span>
+	</span>
+	<span class="vcardline">EMail: <a href="mailto:housley@vigilsec.com">housley@vigilsec.com</a></span>
+
+  </address>
+</div>
+
+</body>
+</html>
