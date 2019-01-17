@@ -475,8 +475,8 @@ The new entry in the "COSE Key Types" registry has the following columns:
    Reference:  This document (Number to be assigned by RFC Editor)
 ~~~
 
+--- back
+
 #Acknowledgements
 
 Many hanks to Jim Schaad and Tony Putman for their valuable review and insights.
-
---- back
