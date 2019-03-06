@@ -1,8 +1,8 @@
 ---
 title: "Use of the Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)"
 abbrev: HashSig with COSE
-docname: draft-ietf-cose-hash-sig-00
-date: 2019-01-15
+docname: draft-ietf-cose-hash-sig-01
+date: 2019-03-06
 category: std
 
 ipr: trust200902
@@ -55,6 +55,8 @@ normative:
       "FIPS Publication": "180-3"
 
 informative:
+  RFC4086:
+  RFC5280:
   BH2013:
     title: "The Factoring Dead: Preparing for the Cryptopocalypse"
     author:
@@ -128,63 +130,95 @@ informative:
       org: "Department of Computer Science, University of Illinois at Chicago"
     date: 2009
     target: http://www.pqcrypto.org/www.springer.com/cda/content/document/cda_downloaddocument/9783540887010-c1.pdf
-  RFC4086:
-  RFC5280:
-
 
 --- abstract
 
-This document specifies the conventions for using the Leighton-Micali Signature (LMS) algorithm for digital signatures with the CBOR Object Signing and Encryption (COSE) syntax.
+This document specifies the conventions for using the HSS/LMS
+hash-based signature algorithm with the CBOR Object Signing and
+Encryption (COSE) syntax.  The HSS/LMS algorithm is one form of
+hash-based digital signature; it is described in [HASHSIG].
 
 --- middle
 
 #Introduction {#intro}
 
-Today, RSA is often used to digitally sign software updates.  In
-preparation for a day when RSA, DSA, and ECDSA cannot be depended
-upon, a digital signature algorithm is needed that will remain secure
-even if there are significant cryptoanalytic advances or a large-
-scale quantum computer is invented.  The hash-based digital signature
-algorithm specified in [HASHSIG] is one such algorithm.  The use of
-hash-based signatures to protect software update distribution will
-allow the deployment of software that implements new cryptosystems
-even if such advances break current digital signature mechanisms.
+This document specifies the conventions for using the HSS/LMS
+hash-based signature algorithm with the CBOR Object Signing and
+Encryption (COSE) {{RFC8152}} syntax.  The Leighton-Micali
+Signature (LMS) system provides a one-time digital signature that
+is a variant of Merkle Tree Signatures (MTS).  The Hierarchical
+Signature System (HSS) is built on top of the LMS system to
+efficiently scale for a larger  numbers of signatures.  The HSS/LMS
+algorithm is one form of hash-based digital signature, and it is
+described in {{HASHSIG}}.  The HSS/LMS signature algorithm can only
+be used for a fixed number of signing operations.  The number of
+signing operations depends upon the size of the tree.  The HSS/LMS
+signature algorithm uses small public keys, and it has low computational
+cost; however, the signatures are quite large.  The HSS/LMS private key
+can be very small when the signer is willing to perform additional
+computation at signing time; alternatively, the private key can consume
+additional memory and provide a faster signing time.
 
-This document specifies the conventions for using the Leighton-Micali
-Signature (LMS) algorithm [HASHSIG] for digital signatures with the
-CBOR Object Signing and Encryption (COSE) [RFC8152] syntax.  The LMS
-algorithm is one form of hash-based digital signature; it can only be
-used for a fixed number of signatures.  The LMS algorithm uses small
-private and public keys, and it has low computational cost; however,
-the signatures are quite large.
+##Algorithm Security Considerations
 
-#Terminology {#terms}
+At Black Hat USA 2013, some researchers gave a presentation on the
+current sate of public key cryptography.  They said: "Current
+cryptosystems depend on discrete logarithm and factoring which has
+seen some major new developments in the past 6 months" {{BH2013}}.
+They encouraged preparation for a day when RSA and DSA cannot be
+depended upon.
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this  document are to be interpreted as described in BCP&nbsp;14 {{RFC2119}} {{RFC8174}} when, and only when, they appear in all capitals, as shown here.
+A post-quantum cryptosystem {{PQC}} is a system that is secure against
+quantum computers that have more than a trivial number of quantum
+bits.  It is open to conjecture when it will be feasible to build
+such a machine.  RSA, DSA, and ECDSA are not post-quantum secure.
+
+The HSS/LMS signature algorithm does not depend on discrete
+logarithm or factoring, as a result these algorithms are considered
+to be post-quantum secure.
+
+Today, the RSA digital signature algorithm is often used to sign software
+updates.  In preparation for a day when RSA, DSA, and ECDSA cannot be
+depended upon, a digital signature algorithm is needed that will remain
+secure even if there are significant cryptoanalytic advances or a
+large-scale quantum computer is invented.  The HSS/LMS hash-based digital
+signature algorithm specified in {{HASHSIG}} is one such algorithm.  The
+use of hash-based signatures to protect software update distribution will
+allow the deployment of software that implements new cryptosystems even
+if such advances break current digital signature mechanisms.
+
+##Terminology {#terms}
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in
+BCP&nbsp;14 {{RFC2119}} {{RFC8174}} when, and only when, they appear in
+all capitals, as shown here.
 
 #LMS Digital Signature Algorithm Overview {#overview}
 
 This specification makes use of the hash-based signature algorithm
-specified in [HASHSIG], which is the Leighton and Micali adaptation
+specified in {{HASHSIG}}, which is the Leighton and Micali adaptation
 {{LM}} of the original Lamport-Diffie-Winternitz-Merkle one-time
 signature system {{M1979}}{{M1987}}{{M1989a}}{{M1989b}}.
    
 The hash-based signature algorithm has three major components:
 
 ~~~
-   o  Hierarchical Signature System (HSS) -- see Section 3.1;
+   o  Hierarchical Signature System (HSS) -- see Section 2.1;
 
-   o  Leighton-Micali Signature (LMS) -- see Section 3.2; and
+   o  Leighton-Micali Signature (LMS) -- see Section 2.2; and
 
    o  Leighton-Micali One-time Signature Algorithm (LM-OTS) -- see
-         Section 3.3.
+         Section 2.3.
 ~~~
 
 As implied by the name, the hash-based signature algorithm depends on
 a collision-resistant hash function.  The the hash-based signature
 algorithm specified in {{HASHSIG}} currently makes use of the SHA-256
 one-way hash function {{SHS}}, but it also establishes an IANA registry
-to permit the registration of additional one-way hash functions in the future.
+to permit the registration of additional one-way hash functions in the
+future.
 
 ##Hierarchical Signature System (HSS) {#hss}
 
@@ -236,12 +270,13 @@ Each tree in the hash-based signature algorithm specified in
 {{HASHSIG}} uses the Leighton-Micali Signature (LMS) system.  LMS
 systems have two parameters.  The first parameter is the height of
 the tree, h, which is the number of levels in the tree minus one.
-The hash-based signature algorithm supports five values for this
+The {{HASHSIG}} includes support for five values of this
 parameter: h=5; h=10; h=15; h=20; and h=25.  Note that there are 2^h
 leaves in the tree.  The second parameter is the number of bytes
 output by the hash function, m, which is the amount of data
 associated with each node in the tree.  This specification supports
-only SHA-256, with m=32.
+only SHA-256, with m=32.  An IANA registry is defined so that other
+hash functions could be used in the future.
 
 Currently, the hash-based signature algorithm supports five tree
 sizes:
@@ -282,12 +317,12 @@ The four elements of the LMS signature value can be summarized as:
 
 The hash-based signature algorithm depends on a one-time signature
 method.  This specification makes use of the Leighton-Micali One-time
-Signature Algorithm (LM-OTS) [HASHSIG].  An LM-OTS has five
+Signature Algorithm (LM-OTS) {{HASHSIG}}.  An LM-OTS has five
 parameters:
 
 ~~~
    n -  The number of bytes output by the hash function.  This
-        specification supports only SHA-256 [SHS], with n=32.
+        specification supports only SHA-256 {{SHS}}, with n=32.
 
    H -  A preimage-resistant hash function that accepts byte strings
         of any length, and returns an n-byte string.  This
@@ -305,7 +340,7 @@ parameters:
 ~~~
 
 The values of p and ls are dependent on the choices of the parameters
-n and w, as described in Appendix A of [HASHSIG].
+n and w, as described in Appendix A of {{HASHSIG}}.
 
 Currently, the hash-based signature algorithm supports four LM-OTS
 variants:
@@ -396,31 +431,6 @@ number generator (PRNGs) to generate these values is much less severe
 than the generation of private keys, the guidance in {{RFC4086}}
 remains important.
 
-##Algorithm Security Considerations
-
-At Black Hat USA 2013, some researchers gave a presentation on the
-current sate of public key cryptography.  They said: "Current
-cryptosystems depend on discrete logarithm and factoring which has
-seen some major new developments in the past 6 months" {{BH2013}}.
-They encouraged preparation for a day when RSA and DSA cannot be
-depended upon.
-
-A post-quantum cryptosystem is a system that is secure against
-quantum computers that have more than a trivial number of quantum
-bits.  It is open to conjecture when it will be feasible to build
-such a machine.  RSA, DSA, and ECDSA are not post-quantum secure.
-
-The LM-OTP one-time signature, LMS, and HSS do not depend on discrete
-logarithm or factoring, as a result these algorithms are considered
-to be post-quantum secure.
-
-Today, RSA is often used to digitally sign software updates.  This
-means that the distribution of software updates could be compromised
-if a significant advance is made in factoring or a quantum computer
-is invented.  The use of hash-based signatures to protect software
-update distribution will allow the deployment of software that
-implements new cryptosystems.
-
 #Operational Considerations {#opcons}
 
 The public key for the hash-based signature is the key at the root of
@@ -450,11 +460,11 @@ Key Types" registry.
 The new entry in the "COSE Algorithms" registry has the following columns:
 
 ~~~
-   Name:  HASHSIG-HSS-LMS
+   Name:  HSS-LMS
    
    Value:  TBD (Value to be assigned by IANA)
 
-   Description:  Hash-based digital signatures using HSS/LMS
+   Description:  HSS/LMS hash-based digital signature
 
    Reference:  This document (Number to be assigned by RFC Editor)
 
@@ -466,11 +476,11 @@ The new entry in the "COSE Algorithms" registry has the following columns:
 The new entry in the "COSE Key Types" registry has the following columns:
 
 ~~~
-   Name:  HASHSIG-HSS-LMS
+   Name:  HSS-LMS
 
    Value:  TBD (Value to be assigned by IANA)
 
-   Description:  Public key for hash-based digital signature using HSS/LMS
+   Description:  Public key for HSS/LMS hash-based digital signature
 
    Reference:  This document (Number to be assigned by RFC Editor)
 ~~~
