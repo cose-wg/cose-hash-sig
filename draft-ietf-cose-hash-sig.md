@@ -26,7 +26,7 @@ author:
 
 normative:
   HASHSIG:
-    title: "Hash-Based Signatures"
+    title: "Leighton-Micali Hash-Based Signatures"
     author:
       -
         name: David McGrew
@@ -40,9 +40,10 @@ normative:
         name: Scott Fluhrer
         ins: S. Fluhrer
         org: Cisco Systems
-    date: 2019-01
+    date: 2019-04
     seriesinfo:
-       "draft-mcgrew-hash-sigs-15": "(work in progress)"
+       "RFC": "8554"
+    target: https://rfc-editor.org/rfc/rfc8554.txt
   RFC2119:
   RFC8152:
   RFC8174:
