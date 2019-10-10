@@ -1,15 +1,15 @@
 ---
-title: "Use of the Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)"
+title: "Use of the HSS/LMS Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)"
 abbrev: HashSig with COSE
-docname: draft-ietf-cose-hash-sig-03
-date: 2019-05-10
+docname: draft-ietf-cose-hash-sig-04
+date: 2019-10-10
 category: std
 
 ipr: trust200902
 area: Security
 keyword: Internet-Draft
 
-stand_alone: no
+stand_alone: true
 pi: [toc, sortrefs, symrefs]
 
 author:
@@ -123,6 +123,12 @@ informative:
     date: 1990
     seriesinfo:
       "Lecture Notes in Computer Science": "crypto89"
+  NAS2019:
+    title: "Quantum Computing: Progress and Prospects"
+    author:
+      org: National Academies of Sciences, Engineering, and Medicine
+    date: 2019
+    target: http://dx.doi.org/10.17226/25196
   PQC:
     title: "Introduction to post-quantum cryptography"
     author:
@@ -131,86 +137,59 @@ informative:
       org: "Department of Computer Science, University of Illinois at Chicago"
     date: 2009
     target: http://www.pqcrypto.org/www.springer.com/cda/content/document/cda_downloaddocument/9783540887010-c1.pdf
-  S1997:
-    title: "Polynomial-time algorithms for prime factorization and discrete logarithms on a quantum computer"
-    author:
-      name: Peter W. Shor
-      ins: P. Shor
-    date: 1997
-    seriesinfo:
-      "SIAM Journal on Computing": "26(5), 1484-26"
-    target: http://dx.doi.org/10.1137/S0097539795293172
 
 --- abstract
 
-This document specifies the conventions for using the HSS/LMS
-hash-based signature algorithm with the CBOR Object Signing and
-Encryption (COSE) syntax.  The HSS/LMS algorithm is one form of
-hash-based digital signature; it is described in RFC 8554.
+This document specifies the conventions for using the Hierarchical
+Signature System (HSS) / Leighton-Micali Signature (LMS) hash-based
+signature algorithm with the CBOR Object Signing and Encryption (COSE)
+syntax.  The HSS/LMS algorithm is one form of hash-based digital
+signature; it is described in RFC 8554.
 
 --- middle
 
 #Introduction {#intro}
 
-This document specifies the conventions for using the HSS/LMS
-hash-based signature algorithm with the CBOR Object Signing and
-Encryption (COSE) {{RFC8152}} syntax.  The Leighton-Micali
-Signature (LMS) system provides a one-time digital signature that
-is a variant of Merkle Tree Signatures (MTS).  The Hierarchical
-Signature System (HSS) is built on top of the LMS system to
-efficiently scale for a larger  numbers of signatures.  The HSS/LMS
-algorithm is one form of hash-based digital signature, and it is
-described in {{HASHSIG}}.  The HSS/LMS signature algorithm can only
-be used for a fixed number of signing operations.  The number of
-signing operations depends upon the size of the tree.  The HSS/LMS
-signature algorithm uses small public keys, and it has low computational
-cost; however, the signatures are quite large.  The HSS/LMS private key
-can be very small when the signer is willing to perform additional
-computation at signing time; alternatively, the private key can consume
-additional memory and provide a faster signing time.
+This document specifies the conventions for using the Hierarchical
+Signature System (HSS) / Leighton-Micali Signature (LMS) hash-based
+signature algorithm with with the CBOR Object Signing and Encryption
+(COSE) {{RFC8152}} syntax.  The LMS system provides a one-time digital
+signature that is a variant of Merkle Tree Signatures (MTS).  The HSS is
+built on top of the LMS system to efficiently scale for a larger numbers
+of signatures.  The HSS/LMS algorithm is one form of hash-based digital
+signature, and it is described in {{HASHSIG}}.  The HSS/LMS signature
+algorithm can only be used for a fixed number of signing operations.  The
+number of signing operations depends upon the size of the tree.  The
+HSS/LMS signature algorithm uses small public keys, and it has low
+computational cost; however, the signatures are quite large.  The HSS/LMS
+private key can be very small when the signer is willing to perform
+additional computation at signing time; alternatively, the private key
+can consume additional memory and provide a faster signing time.  The
+HSS/LMS signatures {{HASHSIG}} are currently defined to use exclusively
+SHA-256 {{SHS}}.
 
-##Algorithm Security Considerations
+##Motivation
 
-There have been recent advances in cryptanalysis and advances in
-the development of quantum computers.  Each of these advances pose
-a threat to widely deployed digital signature algorithms.
+Recent advances in cryptanalysis {{BH2013}} and progress in the
+development of quantum computers {{NAS2019}} pose a threat to widely
+deployed digital signature algorithms.  As a result, there is a need
+to prepare for a day that cryptosystems such as RSA and DSA that
+depend on discrete logarithm and factoring cannot be depended upon.
 
-At Black Hat USA 2013, some researchers gave a presentation on the
-current state of public key cryptography.  They said: "Current
-cryptosystems depend on discrete logarithm and factoring which
-has seen some major new developments in the past 6 months"
-{{BH2013}}.  Due to advances in cryptanalysis, they encouraged
-preparation for a day when RSA and DSA cannot be depended upon.
+If large-scale quantum computers are ever built, these computers will
+be able to break many of the public-key cryptosystems currently in
+use.  A post-quantum cryptosystem {{PQC}} is a system that is secure
+against quantum computers that have more than a trivial number of
+quantum bits (qubits).  It is open to conjecture when it will be
+feasible to build such computers; however, RSA, DSA, ECDSA, and EdDSA
+are all vulnerable if large-scale quantum computers come to pass.
 
-Peter Shor showed that a large-scale quantum computer could be used
-to factor a number in polynomial time {{S1997}}, effectively breaking
-RSA.  If large-scale quantum computers are ever built, these computers
-will be able to break many of the public-key cryptosystems currently
-in use.  A post-quantum cryptosystem {{PQC}} is a system that is secure
-against quantum computers that have more than a trivial number of quantum
-bits (qu-bits).  It is open to conjecture when it will be feasible to build
-such computers; however, RSA, DSA, ECDSA, and EdDSA are all vulnerable if
-large-scale quantum computers come to pass.
-
-The HSS/LMS signature algorithm does not depend on the difficulty of
-discrete logarithm or factoring, as a result these algorithms are
-considered to be post-quantum secure.
-
-Hash-based signatures {{HASHSIG}} are currently defined to use
-exclusively SHA-256 {{SHS}}.  An IANA registry is defined so that other hash
-functions could be used in the future.  LM-OTS signature generation
-prepends a random string as well as other metadata before computing the
-hash value.  The inclusion of the random value reduces the chances of an
-attacker being able to find collisions, even if the attacker has a
-large-scale quantum computer.
-
-Today, RSA is often used to digitally sign software updates.  This
-means that the distribution of software updates could be compromised
-if a significant advance is made in factoring or a large-scale quantum
-computer is invented.  The use of HSS/LMS hash-based signatures to
-protect software update distribution, perhaps using the format that
-is being specified by the IETF SUIT Working Group, will allow the
-deployment of software that implements new cryptosystems.
+Since the HSS/LMS signature algorithm does not depend on the difficulty
+of discrete logarithm or factoring, the HSS/LMS signature algorithm is
+considered to be post-quantum secure.  The use of HSS/LMS hash-based
+signatures to protect software update distribution, perhaps using the
+format that is being specified by the IETF SUIT Working Group, will allow
+the deployment of software that implements new cryptosystems.
 
 ##Terminology {#terms}
 
@@ -322,17 +301,16 @@ The LMS public key can be summarized as:
    u32str(lms_algorithm_type) || u32str(otstype) || I || T[1]
 ~~~
 
-An LMS signature consists of four elements: the number of the leaf
-associated with the LM-OTS signature, an LM-OTS signature as
-described in {{lmots}}, a typecode indicating the particular LMS
-algorithm, and an array of values that is associated with the path
-through the tree from the leaf associated with the LM-OTS signature
-to the root.  The array of values contains the siblings of the nodes
-on the path from the leaf to the root but does not contain the nodes
-on the path itself.  The array for a tree with height h will have h
-values.  The first value is the sibling of the leaf, the next value
-is the sibling of the parent of the leaf, and so on up the path to
-the root.
+As specified in {{HASHSIG}}, the LMS signature consists of four elements:
+the number of the leaf associated with the LM-OTS signature, an LM-OTS
+signature as described in {{lmots}}, a typecode indicating the particular
+LMS algorithm, and an array of values that is associated with the path
+through the tree from the leaf associated with the LM-OTS signature to
+the root.  The array of values contains the siblings of the nodes on the
+path from the leaf to the root but does not contain the nodes on the path
+itself.  The array for a tree with height h will have h values.  The
+first value is the sibling of the leaf, the next value is the sibling of
+the parent of the leaf, and so on up the path to the root.
 
 The four elements of the LMS signature value can be summarized as:
 
@@ -370,7 +348,7 @@ parameters:
 ~~~
 
 The values of p and ls are dependent on the choices of the parameters
-n and w, as described in Appendix A of {{HASHSIG}}.
+n and w, as described in Appendix B of {{HASHSIG}}.
 
 The {{HASHSIG}} specification supports four LM-OTS variants:
 
@@ -387,7 +365,10 @@ sets in the future.
 
 Signing involves the generation of C, which is an n-byte random value.
 
-The LM-OTS signature value can be summarized as:
+The LM-OTS signature value can be summarized as the identifier of the
+LM-OTS variant, the random value, and a sequence of hash values (y[0]
+through y[p-1]) that correspond to the elements of the public key as
+described in Section 4.5 of {{HASHSIG}}:
 
 ~~~
    u32str(otstype) || C || y[0] || ... || y[p-1]
@@ -399,9 +380,10 @@ The CBOR Object Signing and Encryption (COSE) {{RFC8152}} supports two
 signature algorithm schemes.  This specification makes use of the
 signature with appendix scheme for hash-based signatures.
 
-The signature value is a large byte string.  The byte string is
-designed for easy parsing, and it includes a counter and type codes
-that indirectly provide all of the information that is needed to
+The signature value is a large byte string as described in {{overview}}.
+The byte string is designed for easy parsing.  The HSS, LMS, and LMOTS
+components of the signature value format include counters and type
+codes that indirectly provide all of the information that is needed to
 parse the byte string during signature validation.
 
 When using a COSE key for this algorithm, the following checks are made:
@@ -427,22 +409,21 @@ When using a COSE key for this algorithm, the following checks are made:
 
 ##Implementation Security Considerations
 
-Implementations must protect the private keys.  Use of a hardware
-security module (HSM) is one way to protect the private keys.
-Compromise of the private keys may result in the ability to forge
-signatures.  Along with the private key, the implementation must keep
-track of which leaf nodes in the tree have been used.  Loss of
-integrity of this tracking data can cause a one-time key to be used
-more than once.  As a result, when a private key and the tracking
-data are stored on non-volatile media or stored in a virtual machine
-environment, care must be taken to preserve confidentiality and
+Implementations MUST protect the private keys.  Compromise of the
+private keys may result in the ability to forge signatures.  Along
+with the private key, the implementation MUST keep track of which
+leaf nodes in the tree have been used.  Loss of integrity of this
+tracking data can cause a one-time key to be used more than once.  As
+a result, when a private key and the tracking data are stored on non-
+volatile media or stored in a virtual machine environment, failed
+writes, virtual machine snapshotting or cloning, and other
+operational concerns must be considered to ensure confidentiality and
 integrity.
 
-When a LMS key pair is generating a LMS key pair, an implementation
-must must generate the key pair and the corresponding identifier
-independently of all other key pairs in the HSS tree.
+When generating an LMS key pair, an implementation MUST generate each
+key pair independently of all other key pairs in the HSS tree.
 
-An implementation must ensure that a LM-OTS private key is used to
+An implementation MUST ensure that a LM-OTS private key is used to
 generate a signature only one time, and ensure that it cannot be used
 for any other purpose.
 
@@ -452,13 +433,13 @@ values can result in little or no security.  An attacker may find it
 much easier to reproduce the PRNG environment that produced the keys,
 searching the resulting small set of possibilities, rather than brute
 force searching the whole key space.  The generation of quality
-random numbers is difficult.  {{RFC4086}} offers important guidance in
-this area.
+random numbers is difficult, and {{RFC4086}} offers important guidance
+in this area.
 
 The generation of hash-based signatures also depends on random
 numbers.  While the consequences of an inadequate pseudo-random
-number generator (PRNGs) to generate these values is much less severe
-than the generation of private keys, the guidance in {{RFC4086}}
+number generator (PRNG) to generate these values is much less severe
+than in the generation of private keys, the guidance in {{RFC4086}}
 remains important.
 
 #Operational Considerations {#opcons}
@@ -473,7 +454,7 @@ trust anchor is required.
 
 To ensure that none of tree nodes are used to generate more than one
 signature, the signer maintains state across different invocations of
-the signing algorithm.  Section 12.2 of [HASHSIG] offers some
+the signing algorithm.  Section 12.2 of {{HASHSIG}} offers some
 practical implementation approaches around this statefulness.  In
 some of these approaches, nodes are sacrificed to ensure that none
 are used more than once.  As a result, the total number of signatures
@@ -520,7 +501,9 @@ The new entry in the "COSE Key Types" registry has the following columns:
 #Examples
 
 This appendix provides an example of a COSE full message signature and
-an example of a COSE_Sign0 message.
+an example of a COSE_Sign0 message.  The display format includes "\\" to
+indicate that the same field continues on the next line, and it includes
+"|" to separate items within a field.
 
 The programs that were used to generate the examples can be found at
 https://github.com/cose-wg/Examples.
@@ -1019,6 +1002,7 @@ This section provides an example of a COSE_Sign0 message.
 #Acknowledgements
 
 Many thanks to
+Roman Danyliw,
 Scott Fluhrer,
 John Mattsson,
 Jim Schaad, and
