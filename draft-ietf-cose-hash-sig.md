@@ -1,8 +1,8 @@
 ---
 title: "Use of the HSS/LMS Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)"
 abbrev: HashSig with COSE
-docname: draft-ietf-cose-hash-sig-04
-date: 2019-10-10
+docname: draft-ietf-cose-hash-sig-05
+date: 2019-10-28
 category: std
 
 ipr: trust200902
@@ -291,9 +291,16 @@ The {{HASHSIG}} specification supports five tree sizes:
    LMS_SHA256_M32_H25.
 ~~~
 
-The {{HASHSIG}} specification  establishes an IANA registry to permit
+The {{HASHSIG}} specification establishes an IANA registry to permit
 the registration of additional hash functions and additional tree
 sizes in the future.
+
+The {{HASHSIG}} specification defines the value I as the private key
+identifier, and the same I value is used for all computations with the
+same LMS tree.  In addition, the {{HASHSIG}} specification defines
+the value T[i] as the m-byte string associated with the ith node in the
+LMS tree, where and the nodes are indexed from 1 to 2^(h+1)-1.  Thus,
+T[1] is the m-byte string associated with the root of the LMS tree.
 
 The LMS public key can be summarized as:
 
@@ -473,7 +480,7 @@ The new entry in the "COSE Algorithms" registry has the following columns:
 ~~~
    Name:  HSS-LMS
    
-   Value:  TBD (Value to be assigned by IANA)
+   Value:  TBD (Value between -256 and 255 to be assigned by IANA)
 
    Description:  HSS/LMS hash-based digital signature
 
@@ -500,7 +507,7 @@ The new entry in the "COSE Key Types" registry has the following columns:
 
 #Examples
 
-This appendix provides an example of a COSE full message signature and
+This appendix provides a non-normative example of a COSE full message signature and
 an example of a COSE_Sign0 message.  The display format includes "\\" to
 indicate that the same field continues on the next line, and it includes
 "|" to separate items within a field.
