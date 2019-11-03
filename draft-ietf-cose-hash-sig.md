@@ -1,8 +1,8 @@
 ---
 title: "Use of the HSS/LMS Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)"
-abbrev: HashSig with COSE
-docname: draft-ietf-cose-hash-sig-06
-date: 2019-11-01
+abbrev: HSS/LMS HashSig with COSE
+docname: draft-ietf-cose-hash-sig-07
+date: 2019-11-03
 category: std
 
 ipr: trust200902
@@ -508,7 +508,7 @@ The new entry in the "COSE Key Types" registry has the following columns:
 #Examples
 
 This appendix provides a non-normative example of a COSE full message signature and
-an example of a COSE_Sign0 message.  This section follows the formatting used in
+an example of a COSE_Sign1 message.  This section follows the formatting used in
 {{RFC8152}}.
 
 The programs that were used to generate the examples can be found at
@@ -617,9 +617,9 @@ a7b3bd0d824a4570'
 )
 ~~~
 
-##Example COSE_Sign0 Message
+##Example COSE_Sign1 Message
 
-This section provides an example of a COSE_Sign0 message.
+This section provides an example of a COSE_Sign1 message.
 
 Size of binary file is 2552 bytes.
 
