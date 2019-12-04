@@ -1,8 +1,8 @@
 ---
 title: "Use of the HSS/LMS Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)"
 abbrev: HSS/LMS HashSig with COSE
-docname: draft-ietf-cose-hash-sig-07
-date: 2019-11-03
+docname: draft-ietf-cose-hash-sig-08
+date: 2019-12-05
 category: std
 
 ipr: trust200902
@@ -56,8 +56,21 @@ normative:
       "FIPS Publication": "180-3"
 
 informative:
+  DSS:
+    title: Digital Signature Standard (DSS)
+    author:
+      org: National Institute of Standards and Technology (NIST)
+    date: 2013
+    seriesinfo:
+      "FIPS Publication": "186-6"
+  IANA:
+    title: IANA Registry for CBOR Object Signing and Encryption (COSE)
+    target: https://www.iana.org/assignments/cose/cose.xhtml
   RFC4086:
   RFC5280:
+  RFC8017:
+  RFC8032:
+  RFC8610:
   BH2013:
     title: "The Factoring Dead: Preparing for the Cryptopocalypse"
     author:
@@ -177,19 +190,22 @@ to prepare for a day that cryptosystems such as RSA and DSA that
 depend on discrete logarithm and factoring cannot be depended upon.
 
 If large-scale quantum computers are ever built, these computers will
+have more than a trivial number of quantum bits (qubits) and they will
 be able to break many of the public-key cryptosystems currently in
 use.  A post-quantum cryptosystem {{PQC}} is a system that is secure
-against quantum computers that have more than a trivial number of
-quantum bits (qubits).  It is open to conjecture when it will be
-feasible to build such computers; however, RSA, DSA, ECDSA, and EdDSA
-are all vulnerable if large-scale quantum computers come to pass.
+against against such large-scale quantum computers.  It is open to
+conjecture when it will be feasible to build such computers; however,
+RSA {{RFC8017}}, DSA {{DSS}}, ECDSA {{DSS}}, and EdDSA {{RFC8032}} are
+all vulnerable if large-scale quantum computers come to pass.
 
 Since the HSS/LMS signature algorithm does not depend on the difficulty
 of discrete logarithm or factoring, the HSS/LMS signature algorithm is
 considered to be post-quantum secure.  The use of HSS/LMS hash-based
-signatures to protect software update distribution, perhaps using the
-format that is being specified by the IETF SUIT Working Group, will allow
-the deployment of software that implements new cryptosystems.
+signatures to protect software update distribution will allow the
+deployment of future software that implements new cryptosystems.  By
+deploying HSS/LMS today, authentication and integrity protection of
+the future software can be provided, even if advances break current
+digital signature mechanisms.
 
 ##Terminology {#terms}
 
@@ -218,7 +234,7 @@ The hash-based signature algorithm has three major components:
 ~~~
 
 As implied by the name, the hash-based signature algorithm depends on
-a collision-resistant hash function.  The the hash-based signature
+a collision-resistant hash function.  The hash-based signature
 algorithm specified in {{HASHSIG}} currently makes use of the SHA-256
 one-way hash function {{SHS}}, but it also establishes an IANA registry
 to permit the registration of additional one-way hash functions in the
@@ -249,6 +265,8 @@ tree with no children) can be summarized as:
    lms_signature  /* signature of message */
 ~~~
 
+where, the notation comes from {{HASHSIG}}.
+
 The elements of the HSS signature value for a tree with Nspk signed public
 keys can be summarized as:
 
@@ -269,7 +287,8 @@ trees minus 1.
 
 ##Leighton-Micali Signature (LMS) {#lms}
 
-Each tree in the hash-based signature algorithm specified in
+Subordinate LMS trees are placed in the the HSS structure discussed in
+{{hss}}.  Each tree in the hash-based signature algorithm specified in
 {{HASHSIG}} uses the Leighton-Micali Signature (LMS) system.  LMS
 systems have two parameters.  The first parameter is the height of
 the tree, h, which is the number of levels in the tree minus one.
@@ -277,9 +296,9 @@ The {{HASHSIG}} includes support for five values of this
 parameter: h=5; h=10; h=15; h=20; and h=25.  Note that there are 2^h
 leaves in the tree.  The second parameter is the number of bytes
 output by the hash function, m, which is the amount of data
-associated with each node in the tree.  This specification supports
-only SHA-256, with m=32.  An IANA registry is defined so that other
-hash functions could be used in the future.
+associated with each node in the tree.  The {{HASHSIG}} specification
+supports only SHA-256, with m=32.  An IANA registry is defined so that
+other hash functions could be used in the future.
 
 The {{HASHSIG}} specification supports five tree sizes:
 
@@ -297,10 +316,11 @@ sizes in the future.
 
 The {{HASHSIG}} specification defines the value I as the private key
 identifier, and the same I value is used for all computations with the
-same LMS tree.  In addition, the {{HASHSIG}} specification defines
-the value T[i] as the m-byte string associated with the ith node in the
-LMS tree, where and the nodes are indexed from 1 to 2^(h+1)-1.  Thus,
-T[1] is the m-byte string associated with the root of the LMS tree.
+same LMS tree.  The value I is also available in the public key.  In
+addition, the {{HASHSIG}} specification defines the value T[i] as the
+m-byte string associated with the ith node in the LMS tree, where and
+the nodes are indexed from 1 to 2^(h+1)-1.  Thus, T[1] is the m-byte
+string associated with the root of the LMS tree.
 
 The LMS public key can be summarized as:
 
@@ -336,12 +356,11 @@ Signature Algorithm (LM-OTS) {{HASHSIG}}.  An LM-OTS has five
 parameters:
 
 ~~~
-   n -  The number of bytes output by the hash function.  This
-        specification supports only SHA-256 [SHS], with n=32.
+   n -  The number of bytes output by the hash function.  For
+        SHA-256 [SHS], n=32.
 
    H -  A preimage-resistant hash function that accepts byte strings
-        of any length, and returns an n-byte string.  This
-        specification supports only SHA-256 [SHS].
+        of any length, and returns an n-byte string.
 
    w -  The width in bits of the Winternitz coefficients.  [HASHSIG]
         supports four values for this parameter: w=1; w=2; w=4; and
@@ -374,8 +393,7 @@ Signing involves the generation of C, which is an n-byte random value.
 
 The LM-OTS signature value can be summarized as the identifier of the
 LM-OTS variant, the random value, and a sequence of hash values (y[0]
-through y[p-1]) that correspond to the elements of the public key as
-described in Section 4.5 of {{HASHSIG}}:
+through y[p-1]) as described in Section 4.5 of {{HASHSIG}}:
 
 ~~~
    u32str(otstype) || C || y[0] || ... || y[p-1]
@@ -396,9 +414,9 @@ parse the byte string during signature validation.
 When using a COSE key for this algorithm, the following checks are made:
 
 ~~~
-   o  The 'kty' field MUST be present, and it MUST be 'HSS-LMS'.
+   o  The 'kty' field MUST be 'HSS-LMS'.
 
-   o  If the 'alg' field is present, and it MUST be 'HSS-LMS'.
+   o  If the 'alg' field is present, it MUST be 'HSS-LMS'.
 
    o  If the 'key_ops' field is present, it MUST include 'sign' when
         creating a hash-based signature.
@@ -414,8 +432,12 @@ When using a COSE key for this algorithm, the following checks are made:
 
 #Security Considerations {#seccons}
 
-##Implementation Security Considerations
+The Security considerations from {{RFC8152}} and {{HASHSIG}} are
+relevant to implementations of this specification.
 
+There are a number of security considerations that need to be taken
+into account by implementers of this specification.
+   
 Implementations MUST protect the private keys.  Compromise of the
 private keys may result in the ability to forge signatures.  Along
 with the private key, the implementation MUST keep track of which
@@ -475,12 +497,14 @@ Key Types" registry.
 
 ##COSE Algorithms Registry Entry
 
-The new entry in the "COSE Algorithms" registry has the following columns:
+The new entry in the "COSE Algorithms" registry {{IANA}} has the
+following columns:
 
 ~~~
    Name:  HSS-LMS
    
-   Value:  TBD (Value between -256 and 255 to be assigned by IANA)
+   Value:  TBD1 (Value between -256 and 255 to be assigned by IANA,
+                 with a preferrence for -46)
 
    Description:  HSS/LMS hash-based digital signature
 
@@ -491,12 +515,32 @@ The new entry in the "COSE Algorithms" registry has the following columns:
 
 ##COSE Key Types Registry Entry
 
-The new entry in the "COSE Key Types" registry has the following columns:
+The new entry in the "COSE Key Types" registry {{IANA}} has the
+following columns:
 
 ~~~
    Name:  HSS-LMS
 
-   Value:  TBD (Value to be assigned by IANA)
+   Value:  TBD2 (Value to be assigned by IANA)
+
+   Description:  Public key for HSS/LMS hash-based digital signature
+
+   Reference:  This document (Number to be assigned by RFC Editor)
+~~~
+
+##COSE Key Type Parameters Registry Entry
+
+The new entry in the "COSE Key Type Parameters" registry {{IANA}} has
+the following columns:
+
+~~~
+   Key Type:  TBD2  (Value to be assigned above by IANA)
+
+   Name:  pub
+
+   Label:  TBD3 (Value to be assigned by IANA)
+
+   CBOR Type:  bstr
 
    Description:  Public key for HSS/LMS hash-based digital signature
 
@@ -508,8 +552,8 @@ The new entry in the "COSE Key Types" registry has the following columns:
 #Examples
 
 This appendix provides a non-normative example of a COSE full message signature and
-an example of a COSE_Sign1 message.  This section follows the formatting used in
-{{RFC8152}}.
+an example of a COSE_Sign1 message.  This section is formatted according to the
+extended CBOR diagnostic format defined by {{RFC8610}}.
 
 The programs that were used to generate the examples can be found at
 https://github.com/cose-wg/Examples.
@@ -519,6 +563,10 @@ https://github.com/cose-wg/Examples.
 This section provides an example of a COSE full message signature.
 
 Size of binary file is 2560 bytes.
+
+{{{ RFC Editor:  This example assumes that -46 will be assigned for
+the HSS-LMS algorithm.  If another value is assigned, then the
+example needs to be regenerated. }}}
 
 ~~~
 98(
@@ -623,6 +671,10 @@ This section provides an example of a COSE_Sign1 message.
 
 Size of binary file is 2552 bytes.
 
+{{{ RFC Editor:  This example assumes that -46 will be assigned for
+the HSS-LMS algorithm.  If another value is assigned, then the
+example needs to be regenerated. }}}
+
 ~~~
 18(
   [
@@ -716,7 +768,9 @@ bd0d824a4570'
 
 Many thanks to
 Roman Danyliw,
+Elwyn Davies,
 Scott Fluhrer,
+Ben Kaduk,
 Laurence Lundblade,
 John Mattsson,
 Jim Schaad, and
