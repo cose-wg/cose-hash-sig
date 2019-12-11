@@ -1,8 +1,8 @@
 ---
 title: "Use of the HSS/LMS Hash-based Signature Algorithm with CBOR Object Signing and Encryption (COSE)"
 abbrev: HSS/LMS HashSig with COSE
-docname: draft-ietf-cose-hash-sig-08
-date: 2019-12-05
+docname: draft-ietf-cose-hash-sig-09
+date: 2019-12-11
 category: std
 
 ipr: trust200902
@@ -488,6 +488,13 @@ practical implementation approaches around this statefulness.  In
 some of these approaches, nodes are sacrificed to ensure that none
 are used more than once.  As a result, the total number of signatures
 that can be generated might be less than the overall HSS set of trees.
+
+A COSE Key Type Parameter for encoding the HSS/LMS private key and
+the state about which tree nodes have been used is deliberately not
+defined.  It was not defined to avoid creating the ability to save the
+private key and state, generate one or more signatures, and then restore
+the private key and state.  Such a restoration operation provides
+disastrous opportunities for tree node reuse. 
 
 #IANA Considerations {#iana}
 
